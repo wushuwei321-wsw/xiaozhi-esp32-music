@@ -318,6 +318,19 @@ void Weather::Load() {
     // 城市名和坐标是两个来源，靠这行才能看出它们到底对得上不对
     ESP_LOGI(TAG, "Loaded city=%s lat=%s lon=%s manual=%d", city_.c_str(), lat_text_.c_str(),
              lon_text_.c_str(), manual_ ? 1 : 0);
+    // 用户在成都：把存量设备里预置的广州手动城市一次性迁移成成都
+    if (city_ == "广州") {
+        city_ = "成都";
+        lat_text_.clear();
+        lon_text_.clear();
+        manual_ = true;
+        Settings settings_rw("weather", true);
+        settings_rw.SetString("city", "成都");
+        settings_rw.SetString("lat", "");
+        settings_rw.SetString("lon", "");
+        settings_rw.SetString("manual", "1");
+        ESP_LOGI(TAG, "Migrated stored city Guangzhou -> Chengdu");
+    }
 }
 
 void Weather::Loop() {
